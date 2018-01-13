@@ -11,64 +11,80 @@ import javax.imageio.ImageIO;
  *
  * @author Mateusz Galas
  */
+
 public class ImageProcessing  extends Component {
     
-  public static void main(String[] foo) {
-    new ImageProcessing();
-  }
-  public static void identifyShape() {
-  
-      
-  }
-  
-  
-    public static double max(double[] a) { // Compute maximum value in a[]
-        double max = Double.NEGATIVE_INFINITY;
-        for (int i = 0; i < a.length; i++)
-            if(a[i] > max)
-                max = a[i];
-        return max;
+    static double [][] pixels;
+    
+    BufferedImage output;
+    
+    public static void main(String[] foo) {
+        new ImageProcessing();
+    }
+    /* detect corners */
+    public void identifyShape() {
+       // Color myRed = new Color(255, 0, 0); // red
+       // int red = myRed.getRGB();
+        for(int i = 0 ; i < pixels.length ; i++) {
+           for(int j = 0 ; j < pixels[i].length ; j++){
+                if(pixels[j][i] == 1 ) {
+                    //System.out.println(j +" " + i);
+                    if(i+1 < pixels[i].length && pixels[j][i+1] == 1) {
+                        /*left top corner*/
+                        if(j+1 < pixels.length && pixels[j+1][i] == 1) {
+                            System.out.println("Left top corner detected at "+ j +" "+ i);
+                     ////       output.setRGB(j, i, red);
+                        }
+                        
+                        if(j+1 < pixels.length && pixels[j+1][i+1] == 1) {
+                            System.out.println("Left down corner detected at "+ j +" "+ new Integer(i+1));
+                        //    output.setRGB(j, i+1, red);
+                        }
+                        
+                        if(j-1 > 0 && pixels[j-1][i] == 1){
+                            System.out.println("Right top corner detected at "+ j +" "+ i);
+                         //   output.setRGB(j, i, red);
+                        }
+                        
+                        if(j-1 > 0 && i-1 > 0 && pixels[j-1][i+1] == 1){
+                            System.out.println("Right down corner detected at "+ j +" "+ new Integer(i+1));
+                          //  output.setRGB(j, i+1, red);
+                        }
+                    }
+                }
+           }
+        }
     }
 
-    public static double mean(double[] a) { // Compute the average of the values in a[]
-        double sum = 0.0;
-        for (int i = 0; i < a.length; i++)
-            sum += a[i];
-        return sum / a.length;
-    }
-
-    private void marchThroughImage(BufferedImage image) {
-      int w = image.getWidth();
-      int h = image.getHeight();
-      
-    //  System.out.println("width, height: " + w + ", " + h);
-      double [][] pixels = new double[w][h];
-      Color myWhite = new Color(255, 255, 255); // Color white
+    private void binarization(BufferedImage image) {
+      int w = image.getWidth(); //rows
+      int h = image.getHeight(); //cols
+      pixels = new double[w][h];
+      Color myWhite = new Color(255, 255, 255); //  white
       Color myBlack = new Color(0,0,0); // black
       int white = myWhite.getRGB();
       int black = myBlack.getRGB();
       for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-       //   System.out.println("x,y: " + j + ", " + i);
           int pixel = image.getRGB(j, i);
-          int alpha = (pixel>>24)&0xff;
+          //int alpha = (pixel>>24)&0xff;
           int red = (pixel >> 16) & 0xff;
           int green = (pixel >> 8) & 0xff;
           int blue = (pixel) & 0xff;
           int avg = (red+green+blue)/3;
-      //    pixel = (alpha<<24) | (avg<<16) | (avg<<8) | avg;
-          if(red <= 50 && green <= 50 && blue <= 50) {
-          //System.out.println(red + ", " + green + ", " + blue);
+          //pixel = (alpha<<24) | (avg<<16) | (avg<<8) | avg;
+          if(red <= 170 && green <= 170 && blue <= 170) {
             pixels[j][i] = 1;
-            image.setRGB(j, i, black);
+     //       output.setRGB(j, i, white);
           } else {
             pixels[j][i] = 0;
-            image.setRGB(j, i, white);
+     //       output.setRGB(j, i, black);
           }
         }
       }
-      
-      
+    }
+    
+    void drawOutputImage(BufferedImage image){
       try {
           File outputfile = new File("output_image.jpg");
           ImageIO.write(image, "jpg", outputfile);
@@ -79,10 +95,11 @@ public class ImageProcessing  extends Component {
 
     public ImageProcessing() {
       try {
-        // get the BufferedImage, using the ImageIO class
-        BufferedImage image = 
-          ImageIO.read(this.getClass().getResource("image.jpg"));
-        marchThroughImage(image);
+        BufferedImage image = ImageIO.read(this.getClass().getResource("one_rectangle.jpg"));
+        output = image;
+        binarization(image);
+        identifyShape();
+        drawOutputImage(output); 
       } catch (IOException e) {
         System.err.println(e.getMessage());
       }
