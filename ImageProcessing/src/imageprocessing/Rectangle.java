@@ -11,11 +11,11 @@ public class Rectangle extends Shape{
     Pixel rightTop;
     Pixel rightDown;
     
-    public Rectangle() {
-        leftTop = null;
-        leftDown = null;
-        rightTop = null;
-        rightDown = null;
+    public Rectangle(Pixel leftTop, Pixel leftDown, Pixel rightTop, Pixel rightDown) {
+        this.leftTop = leftTop;
+        this.leftDown = leftDown;
+        this.rightTop = rightTop;
+        this.rightDown = rightDown;
     }
     
     void setLeftTop (Pixel arg) {
