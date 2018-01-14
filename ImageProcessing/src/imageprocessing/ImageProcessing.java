@@ -67,23 +67,32 @@ public class ImageProcessing  extends Component {
                         }
                        /*skok od lewego dolnego do prawego gornego */ 
                     } else if (i+1 < pixels[j].length && j-1 > 0 && pixels[j-1][i+1] == 1) {
-                        Pixel p1 = new Pixel(j, i);
-                        biases.add(p1);
-                        Pixel p2 = new Pixel(j-1, i+1);
-                        biases.add(p2);
+                        if(!corners.contains(new Pixel(j-1,i))) {
+                            Pixel p1 = new Pixel(j, i);
+                            biases.add(p1);
+                            Pixel p2 = new Pixel(j-1, i+1);
+                            biases.add(p2);
+                       //  System.out.println(j + " " + i);
+                      //  System.out.println(new Integer(j-1) + " " + new Integer(i+1));
+                        }
+             
                        /* lewy gorny do prawy dolny*/
-                    } else if (i+1 < pixels[j].length && j+1 < pixels.length && pixels[j+1][i+1] == 1) {
+                    } else if (i+1 < pixels[j].length && j+1 < pixels.length && pixels[j+1][i+1] == 1 ) {
+                       if(!corners.contains(new Pixel(j,i+1))) {
                         Pixel p1 = new Pixel(j, i);
                         biases.add(p1);
                         Pixel p2 = new Pixel(j+1, i+1);
                         biases.add(p2);
+                       //  System.out.println(j + " " + i);
+                       // System.out.println(new Integer(j+1) + " " + new Integer(i+1));
+                       }
+                
                     }
                 }
            }
        }
-        
         while(corners.size()>0){
-        Vector<Pixel> recPixels = new Vector<>();
+            ArrayList<Pixel> recPixels = new ArrayList<>();
             for (Pixel corner : corners) {
                 if(corner.getRole().equals("leftTop")){
                     recPixels.add(corner);
@@ -112,6 +121,7 @@ public class ImageProcessing  extends Component {
                     break;
                 }
             }
+        System.out.println("rect add");
         Rectangle rectangle = new Rectangle(recPixels.get(0), recPixels.get(1), recPixels.get(2), recPixels.get(3));
         rectangles.add(rectangle);
         }
@@ -158,7 +168,7 @@ public class ImageProcessing  extends Component {
 
     public ImageProcessing() {
       try {
-        BufferedImage image = ImageIO.read(this.getClass().getResource("img_lol.jpg"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("img_one_ellipse.jpg"));
         output = image;
         binarization(image);
         identifyShape();
