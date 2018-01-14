@@ -23,6 +23,7 @@ public class ImageProcessing  extends Component {
     BufferedImage output;
     
     ArrayList<Pixel> corners = new ArrayList<>();
+    ArrayList<Pixel> biases = new ArrayList<>();
     
     public static void main(String[] foo) {
         new ImageProcessing();
@@ -66,9 +67,16 @@ public class ImageProcessing  extends Component {
                         }
                        /*skok od lewego dolnego do prawego gornego */ 
                     } else if (i+1 < pixels[j].length && j-1 > 0 && pixels[j-1][i+1] == 1) {
+                        Pixel p1 = new Pixel(j, i);
+                        biases.add(p1);
+                        Pixel p2 = new Pixel(j-1, i+1);
+                        biases.add(p2);
                        /* lewy gorny do prawy dolny*/
                     } else if (i+1 < pixels[j].length && j+1 < pixels.length && pixels[j+1][i+1] == 1) {
-                        
+                        Pixel p1 = new Pixel(j, i);
+                        biases.add(p1);
+                        Pixel p2 = new Pixel(j+1, i+1);
+                        biases.add(p2);
                     }
                 }
            }
