@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 /**
@@ -17,6 +18,8 @@ public class ImageProcessing  extends Component {
     static double [][] pixels;
     
     BufferedImage output;
+    
+    ArrayList<Pixel> corners = new ArrayList<>();
     
     public static void main(String[] foo) {
         new ImageProcessing();
@@ -32,28 +35,52 @@ public class ImageProcessing  extends Component {
                     if(i+1 < pixels[i].length && pixels[j][i+1] == 1) {
                         /*left top corner*/
                         if(j+1 < pixels.length && pixels[j+1][i] == 1) {
+                            Pixel p = new Pixel(j,i);
+                            p.setRole("lefTop");
+                            corners.add(p);
                             System.out.println("Left top corner detected at "+ j +" "+ i);
-                     ////       output.setRGB(j, i, red);
                         }
                         
                         if(j+1 < pixels.length && pixels[j+1][i+1] == 1) {
+                            Pixel p = new Pixel(j,i+1);
+                            p.setRole("leftDown");
+                            corners.add(p);
                             System.out.println("Left down corner detected at "+ j +" "+ new Integer(i+1));
-                        //    output.setRGB(j, i+1, red);
                         }
                         
                         if(j-1 > 0 && pixels[j-1][i] == 1){
+                            Pixel p = new Pixel(j,i);
+                            p.setRole("rightTop");
+                            corners.add(p);
                             System.out.println("Right top corner detected at "+ j +" "+ i);
-                         //   output.setRGB(j, i, red);
                         }
                         
                         if(j-1 > 0 && i-1 > 0 && pixels[j-1][i+1] == 1){
+                            Pixel p = new Pixel(j,i+1);
+                            p.setRole("rightDown");
+                            corners.add(p);
                             System.out.println("Right down corner detected at "+ j +" "+ new Integer(i+1));
-                          //  output.setRGB(j, i+1, red);
                         }
                     }
                 }
            }
         }
+        /*
+        Rectangle rectangle = new Rectangle();
+        for (Pixel corner : corners) {
+            if(rectangle.getLeftTop() != null && corner.getRole().equals("lefTop")){
+                System.out.println();
+                rectangle.setLeftTop(corner);
+            } else if(rectangle.getRightTop() != null && corner.role.equals("rightTop")){
+                rectangle.setRightTop(corner);
+            } else if(rectangle.getLeftDown() != null && corner.role.equals("leftDown")){
+                rectangle.setLeftDown(corner);
+            } else if (rectangle.getRightDown() != null && corner.role.equals("righDown")){
+                rectangle.setRightDown(corner);
+            } 
+        }
+        System.out.println(rectangle.getLeftTop() + " " + rectangle.getRightTop());
+        */
     }
 
     private void binarization(BufferedImage image) {
@@ -92,6 +119,8 @@ public class ImageProcessing  extends Component {
           ex.printStackTrace();
       }
     }
+    
+    
 
     public ImageProcessing() {
       try {
