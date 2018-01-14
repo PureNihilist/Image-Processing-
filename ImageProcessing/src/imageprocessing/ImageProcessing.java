@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import java.util.Vector;
 
 /**
  *
@@ -16,6 +17,8 @@ import javax.imageio.ImageIO;
 public class ImageProcessing  extends Component {
     
     static double [][] pixels;
+    
+    ArrayList<Rectangle> rectangles = new ArrayList<>();
     
     BufferedImage output;
     
@@ -28,15 +31,15 @@ public class ImageProcessing  extends Component {
     public void identifyShape() {
        // Color myRed = new Color(255, 0, 0); // red
        // int red = myRed.getRGB();
-        for(int i = 0 ; i < pixels.length ; i++) {
-           for(int j = 0 ; j < pixels[i].length ; j++){
+       for(int j = 0 ; j < pixels.length ; j++){
+        for(int i = 0 ; i < pixels[j].length ; i++) {
                 if(pixels[j][i] == 1 ) {
                     //System.out.println(j +" " + i);
                     if(i+1 < pixels[i].length && pixels[j][i+1] == 1) {
                         /*left top corner*/
                         if(j+1 < pixels.length && pixels[j+1][i] == 1) {
                             Pixel p = new Pixel(j,i);
-                            p.setRole("lefTop");
+                            p.setRole("leftTop");
                             corners.add(p);
                             System.out.println("Left top corner detected at "+ j +" "+ i);
                         }
@@ -64,23 +67,41 @@ public class ImageProcessing  extends Component {
                     }
                 }
            }
+       }
+        
+        while(corners.size()>0){
+        Vector<Pixel> recPixels = new Vector<>();
+            for (Pixel corner : corners) {
+                if(corner.getRole().equals("leftTop")){
+                    recPixels.add(corner);
+                    corners.remove(corner);
+                    break;
+                }
+            }
+            for (Pixel corner1 : corners) {
+                if(corner1.getRole().equals("leftDown")){
+                    recPixels.add(corner1);
+                    corners.remove(corner1);
+                    break;
+                }
+            }
+            for (Pixel corner2 : corners) {
+                if(corner2.getRole().equals("rightTop")){
+                    recPixels.add(corner2);
+                    corners.remove(corner2);
+                    break;
+                }
+            }
+            for (Pixel corner3 : corners) {
+                if(corner3.getRole().equals("rightDown")){
+                    recPixels.add(corner3);
+                    corners.remove(corner3);
+                    break;
+                }
+            }
+        Rectangle rectangle = new Rectangle(recPixels.get(0), recPixels.get(1), recPixels.get(2), recPixels.get(3));
+        rectangles.add(rectangle);
         }
-        /*
-        Rectangle rectangle = new Rectangle();
-        for (Pixel corner : corners) {
-            if(rectangle.getLeftTop() != null && corner.getRole().equals("lefTop")){
-                System.out.println();
-                rectangle.setLeftTop(corner);
-            } else if(rectangle.getRightTop() != null && corner.role.equals("rightTop")){
-                rectangle.setRightTop(corner);
-            } else if(rectangle.getLeftDown() != null && corner.role.equals("leftDown")){
-                rectangle.setLeftDown(corner);
-            } else if (rectangle.getRightDown() != null && corner.role.equals("righDown")){
-                rectangle.setRightDown(corner);
-            } 
-        }
-        System.out.println(rectangle.getLeftTop() + " " + rectangle.getRightTop());
-        */
     }
 
     private void binarization(BufferedImage image) {
@@ -124,7 +145,7 @@ public class ImageProcessing  extends Component {
 
     public ImageProcessing() {
       try {
-        BufferedImage image = ImageIO.read(this.getClass().getResource("one_rectangle.jpg"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("img_lol.jpg"));
         output = image;
         binarization(image);
         identifyShape();
