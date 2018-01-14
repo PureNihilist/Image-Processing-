@@ -35,7 +35,7 @@ public class ImageProcessing  extends Component {
         for(int i = 0 ; i < pixels[j].length ; i++) {
                 if(pixels[j][i] == 1 ) {
                     //System.out.println(j +" " + i);
-                    if(i+1 < pixels[i].length && pixels[j][i+1] == 1) {
+                    if(i+1 < pixels[j].length && pixels[j][i+1] == 1) {
                         /*left top corner*/
                         if(j+1 < pixels.length && pixels[j+1][i] == 1) {
                             Pixel p = new Pixel(j,i);
@@ -64,6 +64,11 @@ public class ImageProcessing  extends Component {
                             corners.add(p);
                             System.out.println("Right down corner detected at "+ j +" "+ new Integer(i+1));
                         }
+                       /*skok od lewego dolnego do prawego gornego */ 
+                    } else if (i+1 < pixels[j].length && j-1 > 0 && pixels[j-1][i+1] == 1) {
+                       /* lewy gorny do prawy dolny*/
+                    } else if (i+1 < pixels[j].length && j+1 < pixels.length && pixels[j+1][i+1] == 1) {
+                        
                     }
                 }
            }
