@@ -5,8 +5,8 @@ package imageprocessing;
  * @author Mateusz Galas
  */
 public class Pixel {
-    int x;
-    int y;
+    private int x;
+    private int y;
     String role = "";
     Pixel(int x, int y) {
         this.x = x;
@@ -14,10 +14,18 @@ public class Pixel {
     }
     
     String getRole(){
-        return this.role;
+        return role;
     }
     
     void setRole(String newRole){
-        this.role = newRole;
+        role = newRole;
+    }
+    
+    int getX() {
+        return x;
+    }
+    
+    int getY(){
+        return y;
     }
 }

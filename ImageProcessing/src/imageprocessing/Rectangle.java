@@ -6,10 +6,10 @@ package imageprocessing;
  */
 public class Rectangle extends Shape{
     
-    Pixel leftTop;
-    Pixel leftDown;
-    Pixel rightTop;
-    Pixel rightDown;
+    private Pixel leftTop;
+    private Pixel leftDown;
+    private Pixel rightTop;
+    private Pixel rightDown;
     
     public Rectangle(Pixel leftTop, Pixel leftDown, Pixel rightTop, Pixel rightDown) {
         this.leftTop = leftTop;

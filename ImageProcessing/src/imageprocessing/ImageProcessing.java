@@ -91,40 +91,52 @@ public class ImageProcessing  extends Component {
                 }
            }
        }
-        while(corners.size()>0){
-            ArrayList<Pixel> recPixels = new ArrayList<>();
-            for (Pixel corner : corners) {
-                if(corner.getRole().equals("leftTop")){
-                    recPixels.add(corner);
-                    corners.remove(corner);
-                    break;
+        boolean processing;
+        while(true){
+            processing = false;
+            Pixel [] recPixels = new Pixel[4];
+            
+            for (Pixel leftTop : corners) {
+                if(leftTop.getRole().equals("leftTop")){    
+                    for (Pixel leftDown : corners) {
+                        if(leftDown.getRole().equals("leftDown") && leftTop.getY() < leftDown.getY() && leftTop.getX() == leftDown.getX()){
+                            recPixels[0] = leftTop;
+                            recPixels[1] = leftDown;
+                            processing = true;
+                            break;
+                        }
+                    }
                 }
             }
-            for (Pixel corner1 : corners) {
-                if(corner1.getRole().equals("leftDown")){
-                    recPixels.add(corner1);
-                    corners.remove(corner1);
-                    break;
+            if(corners.remove(recPixels[0]) &&  corners.remove(recPixels[1])){
+                for (Pixel rightTop : corners) {
+                //    System.out.println("loop" + rightTop.getX() + " " + rightTop.getY() + " " + rightTop.getRole());
+                    if(rightTop.getRole().equals("rightTop") && rightTop.getY() == recPixels[0].getY()){    
+                        for (Pixel rightDown : corners) {
+                            if(rightDown.getRole().equals("rightDown") && rightTop.getY() < rightDown.getY() && rightTop.getX() == rightDown.getX() && rightDown.getY() == recPixels[1].getY()){
+                                recPixels[2] = rightTop;
+                                recPixels[3] = rightDown;
+                                processing = true;
+                                break;
+                            }
+                        }
+                    }
                 }
+                corners.remove(recPixels[2]);
+                corners.remove(recPixels[3]);
+                Rectangle rectangle = new Rectangle(recPixels[0], recPixels[1], recPixels[2], recPixels[3]);
+                rectangles.add(rectangle);
+                System.out.println("rectangle");
+                System.out.println("leftTop" + rectangle.getLeftTop().getX() + " " + rectangle.getLeftTop().getY()); 
+                System.out.println("leftDown" + rectangle.getLeftDown().getX() + " " + rectangle.getLeftDown().getY()); 
+                System.out.println("rightTop" + rectangle.getRightTop().getX() + " " + rectangle.getRightTop().getY()); 
+                System.out.println("rightDown" + rectangle.getRightDown().getX() + " " + rectangle.getRightDown().getY()); 
             }
-            for (Pixel corner2 : corners) {
-                if(corner2.getRole().equals("rightTop")){
-                    recPixels.add(corner2);
-                    corners.remove(corner2);
-                    break;
-                }
-            }
-            for (Pixel corner3 : corners) {
-                if(corner3.getRole().equals("rightDown")){
-                    recPixels.add(corner3);
-                    corners.remove(corner3);
-                    break;
-                }
-            }
-        System.out.println("rect add");
-        Rectangle rectangle = new Rectangle(recPixels.get(0), recPixels.get(1), recPixels.get(2), recPixels.get(3));
-        rectangles.add(rectangle);
+            
+            if(!processing)
+                break;
         }
+        System.out.println("Rozpoznano: " + rectangles.size() + " prostokątów");
     }
 
     private void binarization(BufferedImage image) {

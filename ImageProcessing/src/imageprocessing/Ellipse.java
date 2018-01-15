@@ -8,8 +8,8 @@ import java.util.ArrayList;
  */
 public class Ellipse extends Shape{
 
-    Pixel Center;
-    ArrayList<Pixel> ArraysOfPixels;
+    private Pixel Center;
+    private ArrayList<Pixel> ArraysOfPixels;
     
     public Ellipse(Pixel Center, ArrayList<Pixel> pixarray) {
        this.ArraysOfPixels = new ArrayList<>(pixarray);
