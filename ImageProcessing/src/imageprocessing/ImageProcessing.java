@@ -38,28 +38,28 @@ public class ImageProcessing  extends Component {
                     //System.out.println(j +" " + i);
                     if(i+1 < pixels[j].length && pixels[j][i+1] == 1) {
                         /*left top corner*/
-                        if(j+1 < pixels.length && pixels[j+1][i] == 1) {
+                        if(j+1 < pixels.length && pixels[j+1][i] == 1 && pixels[j+1][i+1] == 0) {
                             Pixel p = new Pixel(j,i);
                             p.setRole("leftTop");
                             corners.add(p);
                             System.out.println("Left top corner detected at "+ j +" "+ i);
                         }
-                        
-                        if(j+1 < pixels.length && pixels[j+1][i+1] == 1) {
+                        /*left down corner*/
+                        if(j+1 < pixels.length && pixels[j+1][i+1] == 1 && pixels[j+1][i] == 0 ) {
                             Pixel p = new Pixel(j,i+1);
                             p.setRole("leftDown");
                             corners.add(p);
                             System.out.println("Left down corner detected at "+ j +" "+ new Integer(i+1));
                         }
                         
-                        if(j-1 > 0 && pixels[j-1][i] == 1){
+                        if(j-1 > 0 && pixels[j-1][i] == 1 && pixels[j-1][i+1] == 0){
                             Pixel p = new Pixel(j,i);
                             p.setRole("rightTop");
                             corners.add(p);
                             System.out.println("Right top corner detected at "+ j +" "+ i);
                         }
                         
-                        if(j-1 > 0 && i-1 > 0 && pixels[j-1][i+1] == 1){
+                        if(j-1 > 0 && pixels[j-1][i+1] == 1 && pixels[j-1][i] == 0){
                             Pixel p = new Pixel(j,i+1);
                             p.setRole("rightDown");
                             corners.add(p);
@@ -180,7 +180,7 @@ public class ImageProcessing  extends Component {
 
     public ImageProcessing() {
       try {
-        BufferedImage image = ImageIO.read(this.getClass().getResource("img_one_ellipse.jpg"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("img_two.jpg"));
         output = image;
         binarization(image);
         identifyShape();
