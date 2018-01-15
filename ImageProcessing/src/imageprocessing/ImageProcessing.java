@@ -69,8 +69,10 @@ public class ImageProcessing  extends Component {
                     } else if (i+1 < pixels[j].length && j-1 > 0 && pixels[j-1][i+1] == 1) {
                         if(!corners.contains(new Pixel(j-1,i))) {
                             Pixel p1 = new Pixel(j, i);
+                            p1.setRole("biasUpFirst");
                             biases.add(p1);
                             Pixel p2 = new Pixel(j-1, i+1);
+                            p2.setRole("biasUpSecond");
                             biases.add(p2);
                        //  System.out.println(j + " " + i);
                       //  System.out.println(new Integer(j-1) + " " + new Integer(i+1));
@@ -80,8 +82,10 @@ public class ImageProcessing  extends Component {
                     } else if (i+1 < pixels[j].length && j+1 < pixels.length && pixels[j+1][i+1] == 1 ) {
                        if(!corners.contains(new Pixel(j,i+1))) {
                         Pixel p1 = new Pixel(j, i);
+                        p1.setRole("biasDownFirst");
                         biases.add(p1);
                         Pixel p2 = new Pixel(j+1, i+1);
+                        p2.setRole("biasDownSecond");
                         biases.add(p2);
                        //  System.out.println(j + " " + i);
                        // System.out.println(new Integer(j+1) + " " + new Integer(i+1));
@@ -137,6 +141,33 @@ public class ImageProcessing  extends Component {
                 break;
         }
         System.out.println("Rozpoznano: " + rectangles.size() + " prostokątów");
+        
+        
+        while(biases.size()>0){
+            int right_range;
+            int left_range;
+            ArrayList<Pixel> EllipsePixels = new ArrayList<>();
+            if(biases.get(0).getRole().equals("biasUpFirst")){
+                EllipsePixels.add(biases.get(0));
+                left_range = biases.get(0).getX();
+                biases.remove(0);
+                if(biases.get(1).getRole().equals("biasUpSecond")){
+                    EllipsePixels.add(biases.get(1));
+                    if(biases.get(2).getRole().equals("biasDownFirst")){
+                    int range = (biases.get(2).getX() - biases.get(1).getX());
+                    for(int xi = 1;xi < range;xi++){
+                            Pixel pix1 = new Pixel(biases.get(1).getX()+xi, biases.get(1).getY());
+                            EllipsePixels.add(pix1);
+                        }
+                    EllipsePixels.add(biases.get(2));
+                    biases.remove(2);
+                    EllipsePixels.add(biases.get(3));
+                    right_range = biases.get(3).getX()+1;
+                    biases.remove(3);
+                    }
+                }
+            }
+        }
     }
 
     private void binarization(BufferedImage image) {
@@ -172,7 +203,7 @@ public class ImageProcessing  extends Component {
           File outputfile = new File("output_image.jpg");
           ImageIO.write(image, "jpg", outputfile);
       } catch(IOException ex) {
-          ex.printStackTrace();
+          ex.printStackTrace();+
       }
     }
     
