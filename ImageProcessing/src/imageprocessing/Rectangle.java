@@ -50,4 +50,11 @@ public class Rectangle extends Shape{
         return this.rightDown;
     }
     
+    void print(){
+        System.out.println("Rectangle");
+        System.out.println("Left top corner: "+leftTop.getX() + " " +leftTop.getY());
+        System.out.println("Left down corner: "+leftDown.getX() + " " +leftDown.getY());
+        System.out.println("Right top corner: "+rightTop.getX() + " " +rightTop.getY());
+        System.out.println("Right down corner: "+rightDown.getX() + " " +rightDown.getY());
+    }
 }

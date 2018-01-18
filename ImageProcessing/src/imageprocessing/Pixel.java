@@ -28,4 +28,13 @@ public class Pixel {
     int getY(){
         return y;
     }
+    void setX(int newX) {
+        x = newX;
+    }
+    void setY(int newY) {
+        y = newY;
+    }
+    void print(){
+        System.out.println(getRole() + " " + getX() + " " + getY());
+    }
 }
