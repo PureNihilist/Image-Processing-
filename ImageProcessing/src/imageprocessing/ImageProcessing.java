@@ -129,11 +129,11 @@ public class ImageProcessing  extends Component {
            cleanBiasesFromCorners(r.getRightDown());
         }
             
-        while(true) {
-            collectEllipses();
-            if(biases.isEmpty())
-                break;
-        }  
+        //while(true) {
+          //  collectEllipses();
+            //if(biases.isEmpty())
+              //  break;
+       // }  
         System.out.println("Rozpoznano: " + ellipses.size() + " ellipsy");
         Color myBlack = new Color(0,0,0); // black
         int black = myBlack.getRGB();
@@ -141,6 +141,122 @@ public class ImageProcessing  extends Component {
             //System.out.println(p.getX() +  " " + p.getY());
             output.setRGB(p.getX(), p.getY(), black);        
         }
+            ArrayList<Pixel> commonpoints = commonFieldofTwoRectangles(rectangles.get(0), rectangles.get(1));
+            if(!commonpoints.isEmpty()){
+                for(Pixel p : commonpoints){
+                    //System.out.println("X: "+p.getX()+" Y: "+p.getY());
+                }
+            }
+        int countOfRectangles = rectangles.size();
+        int i = 0;
+        while(i<countOfRectangles){
+            for(int x = i+1;x<rectangles.size();x++){
+                ArrayList<Pixel> common = commonFieldofTwoRectangles(rectangles.get(i), rectangles.get(x));
+                if(common.size()>1){
+                    System.out.println("Prostokąty ");
+                    rectangles.get(i).print();
+                    System.out.println(" i ");
+                    rectangles.get(x).print();
+                    System.out.println("mają wspólną część.");
+                }
+                if(common.size()==1){
+                    System.out.println("Prostokąty ");
+                    rectangles.get(i).print();
+                    System.out.println(" i ");
+                    rectangles.get(x).print();
+                    System.out.println("są styczne.");
+                    for(Pixel pix : common){
+                        pix.print();
+                    }
+                }
+                if(common.size()==0){
+                    boolean gulz = isRectangleInsideAnotherRectangle(rectangles.get(i), rectangles.get(x));
+                    if(gulz){
+                        System.out.println("Prostokąty ");
+                    rectangles.get(i).print();
+                    System.out.println(" i ");
+                    rectangles.get(x).print();
+                    System.out.println("zawierają się w sobie.");
+                    }
+                    else{
+                        System.out.println("Prostokąty ");
+                    rectangles.get(i).print();
+                    System.out.println(" i ");
+                    rectangles.get(x).print();
+                    System.out.println("są rozłączne.");
+                    }
+                }
+            }
+            i++;
+        }
+    }
+    
+    ArrayList<Pixel> commonFieldofTwoRectangles(Rectangle rec1, Rectangle rec2){
+        ArrayList<Pixel> rec1pixels = new ArrayList<>();
+        ArrayList<Pixel> rec2pixels = new ArrayList<>();
+        ArrayList<Pixel> rec1rec2common = new ArrayList<>();
+        for(int i = rec1.getLeftTop().getX();i<=rec1.getRightTop().getX();i++){
+            rec1pixels.add(new Pixel(i, rec1.getLeftTop().getY()));
+        }
+        for(int i = rec1.getLeftTop().getY();i<=rec1.getLeftDown().getY();i++){
+            rec1pixels.add(new Pixel(rec1.getLeftTop().getX(), i));
+        } 
+        for(int i = rec1.getRightTop().getY();i<=rec1.getRightDown().getY();i++){
+            rec1pixels.add(new Pixel(rec1.getRightTop().getX(), i));
+        }
+        for(int i = rec1.getLeftDown().getX();i<=rec1.getRightDown().getX();i++){
+            rec1pixels.add(new Pixel(i, rec1.getLeftDown().getY()));
+        }
+        for(int i = rec2.getLeftTop().getX();i<=rec2.getRightTop().getX();i++){
+            rec2pixels.add(new Pixel(i, rec2.getLeftTop().getY()));
+        }
+        for(int i = rec2.getLeftTop().getY();i<=rec2.getLeftDown().getY();i++){
+            rec2pixels.add(new Pixel(rec2.getLeftTop().getX(), i));
+        } 
+        for(int i = rec2.getRightTop().getY();i<=rec2.getRightDown().getY();i++){
+            rec2pixels.add(new Pixel(rec2.getRightTop().getX(), i));
+        }
+        for(int i = rec2.getLeftDown().getX();i<=rec2.getRightDown().getX();i++){
+            rec2pixels.add(new Pixel(i, rec2.getLeftDown().getY()));
+        }
+        for(Pixel px1 : rec1pixels){
+            for(Pixel px2 : rec2pixels){
+                if(px1.getX()==px2.getX()&&px1.getY()==px2.getY()){
+                    Pixel pixel = new Pixel(px1.getX(), px1.getY());
+                    int count = 0;
+                    for(Pixel pix123 : rec1rec2common){
+                    if(pix123.getX()==pixel.getX()&&pix123.getY()==pixel.getY())
+                        count++;
+                    }
+                    if(count==0){
+                        rec1rec2common.add(pixel);
+                    }
+                }
+            }
+        }
+        return rec1rec2common;
+    }
+    
+    boolean isRectangleInsideAnotherRectangle(Rectangle rec1, Rectangle rec2){
+        if(rec1.getLeftDown().getX()<=rec2.getLeftDown().getX()&&rec1.getLeftDown().getY()>=rec2.getLeftDown().getY()){
+            if(rec1.getLeftTop().getX()<=rec2.getLeftTop().getX()&&rec1.getLeftTop().getY()<=rec2.getLeftTop().getY()){
+                if(rec1.getRightDown().getX()>=rec2.getRightDown().getX()&&rec1.getRightDown().getY()>=rec2.getRightDown().getY()){
+                   if(rec1.getRightTop().getX()<=rec2.getRightTop().getX()&&rec1.getRightTop().getY()<=rec2.getRightTop().getY()){
+                            return true;
+                    }
+                }
+            }
+        }
+        if(rec2.getLeftDown().getX()<=rec1.getLeftDown().getX()&&rec2.getLeftDown().getY()>=rec1.getLeftDown().getY()){
+            if(rec2.getLeftTop().getX()<=rec1.getLeftTop().getX()&&rec2.getLeftTop().getY()<=rec1.getLeftTop().getY()){
+                if(rec2.getRightDown().getX()>=rec1.getRightDown().getX()&&rec2.getRightDown().getY()>=rec1.getRightDown().getY()){
+                   if(rec2.getRightTop().getX()<=rec1.getRightTop().getX()&&rec2.getRightTop().getY()<=rec1.getRightTop().getY()){
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     void collectEllipses(){
@@ -282,7 +398,7 @@ public class ImageProcessing  extends Component {
     
     public ImageProcessing() {
         try {
-            BufferedImage image = ImageIO.read(this.getClass().getResource("img_two.jpg"));
+            BufferedImage image = ImageIO.read(this.getClass().getResource("example_two_rectangles.jpg"));
             output = image;
             binarization(image);
             identifyShape();
