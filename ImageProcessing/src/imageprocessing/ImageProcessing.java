@@ -128,67 +128,58 @@ public class ImageProcessing  extends Component {
            cleanBiasesFromCorners(r.getLeftDown());
            cleanBiasesFromCorners(r.getRightDown());
         }
-            
-        //while(true) {
-          //  collectEllipses();
-            //if(biases.isEmpty())
-              //  break;
-       // }  
-        System.out.println("Rozpoznano: " + ellipses.size() + " ellipsy");
         Color myBlack = new Color(0,0,0); // black
         int black = myBlack.getRGB();
-        for(Pixel p : biases) {
+          for(Pixel p : biases) {
             //System.out.println(p.getX() +  " " + p.getY());
             output.setRGB(p.getX(), p.getY(), black);        
         }
-            ArrayList<Pixel> commonpoints = commonFieldofTwoRectangles(rectangles.get(0), rectangles.get(1));
-            if(!commonpoints.isEmpty()){
-                for(Pixel p : commonpoints){
-                    //System.out.println("X: "+p.getX()+" Y: "+p.getY());
-                }
+          
+          
+          
+        collectEllipses();
+             // collectEllipses();
+              /*
+        while(true) {
+            collectEllipses();
+            if(biases.isEmpty())
+                break;
+        }  */
+        System.out.println("Rozpoznano: " + ellipses.size() + " ellipsy");
+//        commonFieldofTwoEllipses(ellipses.get(0), ellipses.get(1));
+    }
+    
+    void commonFieldofTwoEllipses(Ellipse e1, Ellipse e2) {
+        ArrayList<Pixel> e1Pixels = e1.getArraysOfPixels();
+        ArrayList<Pixel> e2Pixels = e2.getArraysOfPixels();
+        ArrayList<Pixel> commonField = new ArrayList<>();
+        int commonPixels = 0;
+        for(Pixel p1 : e1Pixels) {
+            if(e2Pixels.contains(p1)){
+                commonPixels++;
+                commonField.add(p1);
             }
-        int countOfRectangles = rectangles.size();
-        int i = 0;
-        while(i<countOfRectangles){
-            for(int x = i+1;x<rectangles.size();x++){
-                ArrayList<Pixel> common = commonFieldofTwoRectangles(rectangles.get(i), rectangles.get(x));
-                if(common.size()>1){
-                    System.out.println("Prostokąty ");
-                    rectangles.get(i).print();
-                    System.out.println(" i ");
-                    rectangles.get(x).print();
-                    System.out.println("mają wspólną część.");
-                }
-                if(common.size()==1){
-                    System.out.println("Prostokąty ");
-                    rectangles.get(i).print();
-                    System.out.println(" i ");
-                    rectangles.get(x).print();
-                    System.out.println("są styczne.");
-                    for(Pixel pix : common){
-                        pix.print();
-                    }
-                }
-                if(common.size()==0){
-                    boolean gulz = isRectangleInsideAnotherRectangle(rectangles.get(i), rectangles.get(x));
-                    if(gulz){
-                        System.out.println("Prostokąty ");
-                    rectangles.get(i).print();
-                    System.out.println(" i ");
-                    rectangles.get(x).print();
-                    System.out.println("zawierają się w sobie.");
-                    }
-                    else{
-                        System.out.println("Prostokąty ");
-                    rectangles.get(i).print();
-                    System.out.println(" i ");
-                    rectangles.get(x).print();
-                    System.out.println("są rozłączne.");
-                    }
-                }
-            }
-            i++;
         }
+        if(commonPixels == 0) {
+            /*e1 zawiera e2 */
+            if(e1.getUp().getY() < e2.getUp().getY() && e1.getDown().getY() > e1.getDown().getY() && e1.getLeft().getX() < e2.getLeft().getX() && e1.getRight().getX() > e2.getRight().getX()){
+               System.out.println("e1 zaiera e2");
+                
+            } else if(e2.getUp().getY() < e1.getUp().getY() && e2.getDown().getY() > e1.getDown().getY() && e2.getLeft().getX() < e1.getLeft().getX() && e2.getRight().getX() > e1.getRight().getX()){
+              /* e2 zawiera e1*/
+              System.out.println("e2 zawiera e1");
+            } else {
+                System.out.println("Rozłączne");
+            }
+        } else if(commonPixels == 1) {
+            System.out.println("Styczne");
+        } else if(commonPixels > 1) {
+            System.out.println("Czesc wspolna");
+            for(Pixel p : commonField) {
+                p.print();
+            }
+        }
+        System.out.println("COMMON PIXELS: " +commonPixels);
     }
     
     ArrayList<Pixel> commonFieldofTwoRectangles(Rectangle rec1, Rectangle rec2){
@@ -259,19 +250,97 @@ public class ImageProcessing  extends Component {
         return false;
     }
     
-    void collectEllipses(){
-        int leftMostX = Integer.MAX_VALUE;
-        int leftMostY = 0;  
+    Pixel getLeftCenter(){
+        int lowX = Integer.MAX_VALUE;
+        int lowY = 0;
+        int highY = Integer.MAX_VALUE;
+        Pixel lowest = null;
         for(int i = 0 ; i < biases.size() ; i++){
             Pixel p = biases.get(i);
-            if(p.getX() < leftMostX){
-                leftMostX = p.getX(); 
-                leftMostY = p.getY();
+            if(p.getX() < lowX){
+                lowX = p.getX(); 
+                lowY = p.getY();
+                lowest = new Pixel(lowX, lowY);
             }
+            if(lowest != null && p.getX() == lowX && p.getY() < lowY)
+                highY = p.getY(); 
+            else if(p.getX() > highY) /*im above left border*/
+                break;
+            else if(lowest == null ) /*didnt find any pixel*/
+                return null;
         }    
-        Pixel leftMost = new Pixel(leftMostX, leftMostY);
+        return new Pixel( lowX ,(lowY - highY)/2 + highY );
+    }
+    
+    Pixel lookForIntersectionRight(Pixel leftCenter) {
+        Pixel intersection = null;
+        for(int i = leftCenter.getX()+1 ; i < pixels.length ; i++) {
+            if(pixels[i][leftCenter.getY()] == 1) {
+                intersection = new Pixel(i, leftCenter.getY());
+                break;
+            }
+        }
+        return intersection;
+    }
+    
+    Pixel lookForIntersectionDown(Pixel center){
+        Pixel intersection = null;
+        for(int i = center.getY() ; i < pixels.length ; i++) {
+            if(pixels[center.getX()][i] == 1) {
+                intersection = new Pixel(center.getX(),i);
+                break;
+            }
+        }
+        return intersection;
+    }
+    
+    Pixel lookForIntersectionUp(Pixel center){
+        Pixel intersection = null;
+        for(int i = center.getY() ; i >= 0 ; i--) {
+            if(pixels[center.getX()][i] == 1) {
+                intersection = new Pixel(center.getX(),i);
+                break;
+            }
+        }
+        return intersection;
+    }
+    
+    void collectEllipses(){
+        Pixel leftCenter = getLeftCenter(); // zwraca null jak null to nie ma w ogole elips na obrazku
+        leftCenter.print();
+        Pixel intersection = lookForIntersectionRight(leftCenter);
+        intersection.print();
+        int x1 = (intersection.getX() - leftCenter.getX())/2 + leftCenter.getX();
+        Pixel middle = new Pixel(x1 , leftCenter.getY());
+        middle.print();
+        Pixel middleIntersectionDown = lookForIntersectionDown(middle);
+        Pixel middleIntersectionUp = lookForIntersectionUp(middle);
+        middleIntersectionDown.print();
+        middleIntersectionUp.print();
+        
+        int x2 = (intersection.getX() - leftCenter.getX())/4 + leftCenter.getX();
+        Pixel middle2 = new Pixel(x2, leftCenter.getY());
+        Pixel middleIntersectionDown2 = lookForIntersectionDown(middle2);
+        Pixel middleIntersectionUp2 = lookForIntersectionUp(middle2);
+        middleIntersectionDown2.print();
+        middleIntersectionUp2.print();
+        
+        ArrayList<Pixel> ellipse_points = new ArrayList<>();
+        ellipse_points.add(leftCenter);
+        ellipse_points.add(middleIntersectionDown);
+        ellipse_points.add(middleIntersectionUp);
+        ellipse_points.add(middleIntersectionDown2);
+        ellipse_points.add(middleIntersectionUp2);
+        for(Pixel p : ellipse_points) {
+            /*if() {
+                
+            } */   
+        }
+        
+       
+        /*
         int leftMostOppositeX = 0;
-        int leftMostUpperY = 0;
+                int leftMostUpperY = 0;
         for(int i = 0 ; i < biases.size() ; i++) {
             Pixel p = biases.get(i);
             if(p.getX() == leftMost.getX() && p.getY() == leftMost.getY()) {
@@ -286,15 +355,21 @@ public class ImageProcessing  extends Component {
                 break;
             }
         }
-        /*wypelnianie lewej strony, mozna zrobic dla innych stron*/
+        System.out.print("leftMostOpposite: " +leftMostOppositeX+" "+leftMostUpperY); 
+        leftMost.print();
+        
+        /*wypelnianie lewej strony, mozna zrobic dla innych stron
+        
         for(int j = leftMostUpperY ; j < leftMost.getY() ; j++){
             Pixel p = new Pixel(leftMost.getX(), j);
             if(pixels[leftMost.getX()][j] == 1 && !biases.contains(p)) 
-                biases.add(p);
+               biases.add(p);
         }
         int centerX = (leftMost.getX() - leftMostOppositeX)/2;
         int centerY = (leftMost.getY() - leftMostUpperY)/2;
         Pixel ellipseCenter = new Pixel(leftMostOppositeX + centerX,leftMostUpperY + centerY);
+        System.out.print("center");
+        ellipseCenter.print();
         int leftMostUpY = 0;
         for(int j = ellipseCenter.getY() ; j > 0 ; j--){
             Pixel p = new Pixel(ellipseCenter.getX(), j);
@@ -317,8 +392,8 @@ public class ImageProcessing  extends Component {
         Pixel right = new Pixel(leftMostOppositeX, ellipseCenter.getY());
         Pixel up = new Pixel(ellipseCenter.getX(), leftMostUpY );    
         Pixel down = new Pixel(ellipseCenter.getX(), leftMostDownY);
-      //  left.print(); right.print(); up.print(); down.print();
-      //  System.out.println("center"); ellipseCenter.print();
+        left.print(); right.print(); up.print(); down.print();
+        System.out.println("center"); ellipseCenter.print();
         ArrayList<Pixel> ellipsePoints = new ArrayList<>();
         for(Pixel p : biases) {
             if(p.getX() >= leftMost.getX() && p.getX() <= leftMostOppositeX && p.getY() >= up.getY() && p.getY() <= down.getY()) 
@@ -329,15 +404,15 @@ public class ImageProcessing  extends Component {
                 biases.remove(p);
         }
         Ellipse ellipse = new Ellipse(left,right,up,down,ellipseCenter,ellipsePoints);
-     //   System.out.println("rozpoznano ellipsę");
         ellipses.add(ellipse);
+        */
         /*
         for(Pixel p : ellipsePoints){
          output.setRGB(p.getX(), p.getY(), black);     
         }*/
     }
     
-
+    
     void cleanBiasesFromCorners(Pixel corner){
         corner.setY(corner.getY()+1); /*below*/
         biases.remove(searchForPixel(corner, biases));
@@ -398,7 +473,7 @@ public class ImageProcessing  extends Component {
     
     public ImageProcessing() {
         try {
-            BufferedImage image = ImageIO.read(this.getClass().getResource("example_two_rectangles.jpg"));
+            BufferedImage image = ImageIO.read(this.getClass().getResource("TwoE.jpg"));
             output = image;
             binarization(image);
             identifyShape();
