@@ -50,6 +50,17 @@ public class Rectangle extends Shape{
         return this.rightDown;
     }
     
+    void moveRectangleWithVector(int x, int y){
+        this.leftDown.addX(x);
+        this.leftDown.addY(y);
+        this.leftTop.addX(x);
+        this.leftTop.addY(y);
+        this.rightDown.addX(x);
+        this.rightDown.addY(y);
+        this.rightTop.addX(x);
+        this.rightTop.addY(y);
+    }
+    
     void print(){
         System.out.println("Rectangle");
         System.out.println("Left top corner: "+leftTop.getX() + " " +leftTop.getY());

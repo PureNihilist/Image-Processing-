@@ -72,6 +72,23 @@ public class Ellipse extends Shape{
         this.ArraysOfPixels = ArraysOfPixels;
     }
     
+    void moveEllipseWithVector(int x, int y){
+        this.left.addX(x);
+        this.left.addY(y);
+        this.up.addX(x);
+        this.up.addY(y);
+        this.right.addX(x);
+        this.right.addY(y);
+        this.down.addX(x);
+        this.down.addY(y);
+        this.Center.addX(x);
+        this.Center.addY(y);
+        for(Pixel pix : this.ArraysOfPixels){
+            pix.addX(x);
+            pix.addY(y);
+        }
+    }
+    
     void print() {
         System.out.println("Ellipse");
         System.out.println("Up line center: "+this.getUp().getX() + " " +this.getUp().getY());
