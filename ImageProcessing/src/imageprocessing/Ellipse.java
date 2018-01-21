@@ -71,4 +71,13 @@ public class Ellipse extends Shape{
     public void setArraysOfPixels(ArrayList<Pixel> ArraysOfPixels) {
         this.ArraysOfPixels = ArraysOfPixels;
     }
+    
+    void print() {
+        System.out.println("Ellipse");
+        System.out.println("Up line center: "+this.getUp().getX() + " " +this.getUp().getY());
+        System.out.println("Down line center: "+this.getDown().getX() + " " +this.getDown().getY());
+        System.out.println("Right line center: "+this.getRight().getX() + " "+ this.getRight().getY());
+        System.out.println("Left line center: "+this.getLeft().getX() + " "+ this.getRight().getY());
+        System.out.println("Ellipse center: " + this.getCenter().getX() + " " + this.getCenter().getY());
+    }
 }

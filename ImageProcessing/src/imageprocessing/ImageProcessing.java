@@ -147,6 +147,14 @@ public class ImageProcessing  extends Component {
         }  */
         System.out.println("Rozpoznano: " + ellipses.size() + " ellipsy");
 //        commonFieldofTwoEllipses(ellipses.get(0), ellipses.get(1));
+
+
+    /*
+
+     tu powinno byc przegladanie reclangi i ellips i sprawdzanie powiazan kazdych mozliwych par obiektow
+
+
+    */
     }
     
     void commonFieldofTwoEllipses(Ellipse e1, Ellipse e2) {
