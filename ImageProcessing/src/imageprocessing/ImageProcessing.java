@@ -214,22 +214,20 @@ public class ImageProcessing  extends Component {
                 }
                 if(common.size()==0){
                     boolean gulz = isEllipseInsideRectangle(rectangles.get(lux2), ellipses.get(luxi));
-                    // boolean gulz2 = isRectangleInsideEllipse(rectangles.get(lux2), ellipses.get(luxi));
+                    boolean gulz2 = isRectangleInsideEllipse(rectangles.get(lux2), ellipses.get(luxi));
                     if(gulz){
                         System.out.println("Elipsa ");
                     ellipses.get(luxi).print();
                     System.out.println("zawiera się w prostokącie.");
                     rectangles.get(lux2).print();                   
                     }
-                    /*
+                    
                     else if(gulz2){
-                        System.out.println("Prostokąty ");
-                    rectangles.get(i).print();
-                    System.out.println(" i ");
-                    rectangles.get(x).print();
-                    System.out.println("są rozłączne.");
+                    System.out.println("Prostokąt ");
+                    rectangles.get(lux2).print(); 
+                    System.out.println("zawiera się w elipsie.");
+                     ellipses.get(luxi).print();
                     }
-                    */
                     else{
                         System.out.println("Prostokąt ");
                     rectangles.get(lux2).print();
@@ -389,6 +387,15 @@ public class ImageProcessing  extends Component {
                         return true;
                     }
                 }
+            }
+        }
+        return false;
+    }
+    
+    boolean isRectangleInsideEllipse(Rectangle rec, Ellipse ell){
+        if(rec.getRightDown().getX()<=ell.getRight().getX()){
+            if(rec.getLeftDown().getX()>=ell.getLeft().getX()){
+                return true;
             }
         }
         return false;
