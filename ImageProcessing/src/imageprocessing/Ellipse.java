@@ -73,20 +73,33 @@ public class Ellipse extends Shape{
     }
     
     void moveEllipseWithVector(int x, int y){
-        this.left.addX(x);
-        this.left.addY(y);
-        this.up.addX(x);
-        this.up.addY(y);
-        this.right.addX(x);
-        this.right.addY(y);
-        this.down.addX(x);
-        this.down.addY(y);
-        this.Center.addX(x);
-        this.Center.addY(y);
+        //System.out.println(this.left.getX());
+        this.left.setX(this.left.getX()+x);
+        //System.out.println(this.left.getX());
+        this.left.setY(this.left.getY()+y);
+        this.up.setX(this.up.getX()+x);
+        this.up.setY(this.up.getY()+y);
+        this.right.setX(this.right.getX()+x);
+        this.right.setY(this.right.getY()+y);
+        this.down.setX(this.down.getX()+x);
+        this.down.setY(this.down.getY()+y);
+        this.Center.setX(this.Center.getX()+x);
+        this.Center.setY(this.Center.getY()+y);
         for(Pixel pix : this.ArraysOfPixels){
-            pix.addX(x);
-            pix.addY(y);
+            if((pix.getX()!=this.left.getX())&&pix.getY()!=this.left.getY()){
+                if((pix.getX()!=this.right.getX())&&pix.getY()!=this.right.getY()){
+                    if((pix.getX()!=this.up.getX())&&pix.getY()!=this.up.getY()){
+                        if((pix.getX()!=this.down.getX())&&pix.getY()!=this.down.getY()){
+                            if((pix.getX()!=this.Center.getX())&&pix.getY()!=this.Center.getY()){
+                                pix.setX(pix.getX()+x);
+                                pix.setY(pix.getY()+y);
+                            }
+                        }
+                    }
+                }
         }
+        }
+        //System.out.println(this.left.getX());
     }
     
     void print() {

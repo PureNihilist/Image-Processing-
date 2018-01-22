@@ -51,14 +51,14 @@ public class Rectangle extends Shape{
     }
     
     void moveRectangleWithVector(int x, int y){
-        this.leftDown.addX(x);
-        this.leftDown.addY(y);
-        this.leftTop.addX(x);
-        this.leftTop.addY(y);
-        this.rightDown.addX(x);
-        this.rightDown.addY(y);
-        this.rightTop.addX(x);
-        this.rightTop.addY(y);
+        this.leftDown.setX(this.leftDown.getX()+x);
+        this.leftDown.setY(this.leftDown.getY()+y);
+        this.leftTop.setX(this.leftTop.getX()+x);
+        this.leftTop.setY(this.leftTop.getY()+y);
+        this.rightDown.setX(this.rightDown.getX()+x);
+        this.rightDown.setY(this.rightDown.getY()+y);
+        this.rightTop.setX(this.rightTop.getX()+x);
+        this.rightTop.setY(this.rightTop.getY()+y);
     }
     
     void print(){
