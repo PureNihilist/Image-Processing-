@@ -22,7 +22,7 @@ public class ImageProcessing  extends Component {
     ArrayList<Pixel> biases = new ArrayList<>();
     
     public static void main(String[] foo) {
-        new ImageProcessing();
+        new ImageProcessing(foo[0]);
     }
     /* detect corners */
     public void identifyShape() {
@@ -137,9 +137,9 @@ public class ImageProcessing  extends Component {
           
           
           
-        collectEllipses();
-             collectEllipses();
-              
+        while(!biases.isEmpty()){
+            collectEllipses();
+        }
         
         System.out.println("Rozpoznano: " + ellipses.size() + " ellipsy");
 //        commonFieldofTwoEllipses(ellipses.get(0), ellipses.get(1));
@@ -241,7 +241,57 @@ public class ImageProcessing  extends Component {
                 }
             }
         }
-    
+        ellipses.get(0).moveEllipseWithVector(-60, 0);
+        for(int luxi = 0;luxi<countOfEllipses;luxi++){
+            for(int lux2 = 0;lux2<countOfRectangles;lux2++){
+                ArrayList<Pixel> common = commonFieldofRectangleAndEllipse(rectangles.get(lux2), ellipses.get(luxi));
+                if(common.size()>1){
+                    System.out.println("Prostokąt ");
+                    rectangles.get(lux2).print();
+                    System.out.println(" i ");
+                    ellipses.get(luxi).print();
+                    System.out.println("mają wspólną część.");
+                }
+                if(common.size()==1){
+                    System.out.println("Prostokąt ");
+                    rectangles.get(lux2).print();
+                    System.out.println(" i ");
+                    ellipses.get(luxi).print();
+                    System.out.println("są styczne.");
+                    for(Pixel pix : common){
+                        pix.print();
+                    }
+                }
+                if(common.size()==0){
+                    boolean gulz = isEllipseInsideRectangle(rectangles.get(lux2), ellipses.get(luxi));
+                    boolean gulz2 = isRectangleInsideEllipse(rectangles.get(lux2), ellipses.get(luxi));
+                    if(gulz){
+                        System.out.println("Elipsa ");
+                    ellipses.get(luxi).print();
+                    System.out.println("zawiera się w prostokącie.");
+                    rectangles.get(lux2).print();                   
+                    }
+                    
+                    else if(gulz2){
+                    System.out.println("Prostokąt ");
+                    rectangles.get(lux2).print(); 
+                    System.out.println("zawiera się w elipsie.");
+                     ellipses.get(luxi).print();
+                    }
+                    else{
+                        System.out.println("Prostokąt ");
+                    rectangles.get(lux2).print();
+                    System.out.println(" i ");
+                    ellipses.get(luxi).print();
+                    System.out.println("są rozłączne.");
+                    for(Pixel pix : common){
+                        pix.print();
+                    }
+                    }
+                }
+            }
+        }
+                commonFieldofTwoEllipses(ellipses.get(0), ellipses.get(1));
     }
     
     void commonFieldofTwoEllipses(Ellipse e1, Ellipse e2) {
@@ -274,12 +324,17 @@ public class ImageProcessing  extends Component {
                 p.print();
             }
         }
-        System.out.println("COMMON PIXELS: " +commonPixels);
+        //System.out.println("COMMON PIXELS: " +commonPixels);
     }
     
     ArrayList<Pixel> commonFieldofRectangleAndEllipse(Rectangle rec, Ellipse ell){
         ArrayList<Pixel> recpixels = new ArrayList<>();
-        ArrayList<Pixel> ellpixels = new ArrayList<>(ell.getArraysOfPixels());
+        ArrayList<Pixel> ellpixels = ell.getArraysOfPixels();
+        ellpixels.add(ell.getCenter());
+        ellpixels.add(ell.getDown());
+        ellpixels.add(ell.getUp());
+        ellpixels.add(ell.getRight());
+        ellpixels.add(ell.getLeft());
         ArrayList<Pixel> recandellcommon = new ArrayList<>();
         for(int i = rec.getLeftTop().getX();i<=rec.getRightTop().getX();i++){
             recpixels.add(new Pixel(i, rec.getLeftTop().getY()));
@@ -380,13 +435,9 @@ public class ImageProcessing  extends Component {
         return false;
     }
     boolean isEllipseInsideRectangle(Rectangle rec, Ellipse ell){
-        if(ell.getLeft().getX()>=rec.getLeftDown().getX()){
-            if(ell.getRight().getX()<=rec.getRightDown().getX()){
-                if(ell.getDown().getY()>=rec.getLeftDown().getY()){
-                    if(ell.getUp().getY()<=rec.getLeftTop().getY()){
-                        return true;
-                    }
-                }
+        if(ell.getLeft().getX()>rec.getLeftDown().getX()){
+            if(ell.getRight().getX()<rec.getRightDown().getX()){
+                return true;
             }
         }
         return false;
@@ -593,9 +644,9 @@ public class ImageProcessing  extends Component {
         }
     }
     
-    public ImageProcessing() {
+    public ImageProcessing(String name) {
         try {
-            BufferedImage image = ImageIO.read(this.getClass().getResource("TwoE.jpg"));
+            BufferedImage image = ImageIO.read(this.getClass().getResource(name));
             output = image;
             binarization(image);
             identifyShape();
